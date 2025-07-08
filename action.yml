@@ -1,0 +1,29 @@
+name: 'Setup Playwright.NET'
+description: 'Install Playwright browsers and dependencies for .NET projects'
+author: 'Phil Scott'
+inputs:
+  global-json-file:
+    description: 'Path to global.json file to determine .NET version'
+    required: false
+    default: 'global.json'
+  dotnet-version:
+    description: '.NET version to use (e.g., "8.0.x", "9.0.x"). Takes precedence over global.json'
+    required: false
+  with-deps:
+    description: 'Install system dependencies along with browsers'
+    required: false
+    default: 'true'
+  browsers:
+    description: 'Browsers to install (e.g., "chromium firefox webkit" or "all")'
+    required: false
+    default: 'all'
+  install-powershell:
+    description: 'Automatically install PowerShell if not found'
+    required: false
+    default: 'true'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+branding:
+  icon: 'play-circle'
+  color: 'blue'

@@ -1,0 +1,61 @@
+# .github/workflows/test.yml
+name: Test Action
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-with-dotnet-version:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+    
+    - name: Create test project
+      run: |
+        dotnet new console -n TestApp
+        cd TestApp
+        dotnet add package Microsoft.Playwright
+        dotnet build
+    
+    - name: Test the action with dotnet-version
+      uses: ./  # This uses your local action
+      with:
+        dotnet-version: 9.0.x
+
+  test-with-global-json:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Create global.json
+      run: |
+        echo '{
+          "sdk": {
+            "version": "8.0.100",
+            "rollForward": "latestFeature"
+          }
+        }' > global.json
+    
+    - name: Setup .NET from global.json
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: global.json
+    
+    - name: Create test project
+      run: |
+        dotnet new console -n TestApp
+        cd TestApp
+        dotnet add package Microsoft.Playwright
+        dotnet build
+    
+    - name: Test the action with global.json
+      uses: ./  # This uses your local action
+      with:
+        global-json-file: global.json
