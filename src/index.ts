@@ -54,13 +54,13 @@ export function getVersionFromGlobalJson(globalJsonPath: string): string {
   return version;
 }
 
-function getPlaywrightScriptPath(dotnetVersion: string): string {
-  // Try common output directory patterns
+function findPlaywrightScript(dir: string, dotnetVersion: string): string | null {
+  // Try common output directory patterns in the given directory
   const possiblePaths = [
-    `bin/Debug/net${dotnetVersion}/playwright.ps1`,
-    `bin/Release/net${dotnetVersion}/playwright.ps1`,
-    `bin/Debug/net${dotnetVersion}.0/playwright.ps1`,
-    `bin/Release/net${dotnetVersion}.0/playwright.ps1`
+    `${dir}/bin/Debug/net${dotnetVersion}/playwright.ps1`,
+    `${dir}/bin/Release/net${dotnetVersion}/playwright.ps1`,
+    `${dir}/bin/Debug/net${dotnetVersion}.0/playwright.ps1`,
+    `${dir}/bin/Release/net${dotnetVersion}.0/playwright.ps1`
   ];
 
   for (const possiblePath of possiblePaths) {
@@ -69,7 +69,65 @@ function getPlaywrightScriptPath(dotnetVersion: string): string {
     }
   }
 
-  // If not found, return the most likely path and let it fail with a helpful error
+  return null;
+}
+
+function searchDirectoryRecursive(dir: string, dotnetVersion: string, maxDepth: number = 3, currentDepth: number = 0): string | null {
+  // Prevent infinite recursion and limit search depth for performance
+  if (currentDepth >= maxDepth) {
+    return null;
+  }
+
+  // Try to find the script in the current directory
+  const script = findPlaywrightScript(dir, dotnetVersion);
+  if (script) {
+    return script;
+  }
+
+  // Recursively search subdirectories
+  try {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isDirectory() && !shouldSkipDirectory(entry.name)) {
+        const subDir = `${dir}/${entry.name}`;
+        const subDirScript = searchDirectoryRecursive(subDir, dotnetVersion, maxDepth, currentDepth + 1);
+        if (subDirScript) {
+          return subDirScript;
+        }
+      }
+    }
+  } catch (error) {
+    // If we can't read the directory, continue with other directories
+  }
+
+  return null;
+}
+
+function shouldSkipDirectory(dirName: string): boolean {
+  // Skip hidden directories, node_modules, and other common non-project directories
+  const skipDirs = [
+    'node_modules',
+    '.git',
+    '.vs',
+    '.vscode',
+    'obj',
+    'packages',
+    '.nuget',
+    'dist',
+    'build'
+  ];
+  
+  return dirName.startsWith('.') || skipDirs.includes(dirName);
+}
+
+function getPlaywrightScriptPath(dotnetVersion: string): string {
+  // Search recursively starting from the current directory
+  const foundScript = searchDirectoryRecursive('.', dotnetVersion);
+  if (foundScript) {
+    return foundScript;
+  }
+
+  // If not found anywhere, return the most likely path and let it fail with a helpful error
   return `bin/Debug/net${dotnetVersion}/playwright.ps1`;
 }
 
