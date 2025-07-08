@@ -41,7 +41,6 @@ A GitHub Action that automatically installs Playwright browsers and dependencies
     browsers: 'chromium firefox'
     install-powershell: true
 ```
-```
 
 ## Inputs
 
