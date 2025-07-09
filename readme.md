@@ -15,7 +15,7 @@ A GitHub Action that automatically installs Playwright browsers and dependencies
 
 ```yaml
 - name: Install Playwright.NET
-  uses: your-username/setup-playwright-dotnet@v1
+  uses: phil-scott-78/setup-playwright-dotnet@v0.1.0-alpha
   with:
     dotnet-version: 9.0.x
 ```
@@ -24,7 +24,7 @@ A GitHub Action that automatically installs Playwright browsers and dependencies
 
 ```yaml
 - name: Install Playwright.NET
-  uses: your-username/setup-playwright-dotnet@v1
+  uses: phil-scott-78/setup-playwright-dotnet@v0.1.0-alpha
   with:
     global-json-file: global.json
 ```
@@ -34,7 +34,7 @@ A GitHub Action that automatically installs Playwright browsers and dependencies
 ```yaml
 ```yaml
 - name: Install Playwright.NET
-  uses: your-username/setup-playwright-dotnet@v1
+  uses: phil-scott-78/setup-playwright-dotnet@v0.1.0-alpha
   with:
     dotnet-version: 9.0.x
     with-deps: true
@@ -78,7 +78,7 @@ jobs:
       run: dotnet build
     
     - name: Install Playwright.NET
-      uses: your-username/setup-playwright-dotnet@v1
+      uses: phil-scott-78/setup-playwright-dotnet@v0.1.0-alpha
       with:
         global-json-file: global.json
     
@@ -106,15 +106,6 @@ This action supports all .NET versions that Playwright.NET supports. The action 
 
 - Your project must be built (`dotnet build`) before using this action
 - Your project must have Playwright.NET installed as a dependency
-- A `global.json` file must exist in your repository root (or specified path)
-
-## Error Handling
-
-The action provides clear error messages for common issues:
-
-- Missing `global.json` file
-- Unable to determine .NET version
-- Playwright script not found (usually means project wasn't built)
 
 ## Contributing
 
